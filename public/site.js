@@ -1,3 +1,16 @@
+const siteBasePath = (() => {
+    const script = document.currentScript;
+    if (!script || !script.src) {
+        return '';
+    }
+
+    return new URL(script.src).pathname.replace(/\/site\.js$/, '').replace(/\/$/, '');
+})();
+
+function withBasePath(path) {
+    return `${siteBasePath}${path}`;
+}
+
 // Set dynamic copyright year
 document.addEventListener('DOMContentLoaded', function() {
     const yearElement = document.getElementById('year');
@@ -50,27 +63,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!name) {
                 document.getElementById('name').classList.add('error');
-                document.getElementById('nameError').textContent = 'Name is required';
+                document.getElementById('nameError').textContent = 'El nombre es obligatorio';
                 isValid = false;
             }
 
             if (!email) {
                 document.getElementById('email').classList.add('error');
-                document.getElementById('emailError').textContent = 'Email is required';
+                document.getElementById('emailError').textContent = 'El correo es obligatorio';
                 isValid = false;
             } else if (!isValidEmail(email)) {
                 document.getElementById('email').classList.add('error');
-                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                document.getElementById('emailError').textContent = 'Escribe un correo válido';
                 isValid = false;
             }
 
             if (!message) {
                 document.getElementById('message').classList.add('error');
-                document.getElementById('messageError').textContent = 'Message is required';
+                document.getElementById('messageError').textContent = 'El mensaje es obligatorio';
                 isValid = false;
             } else if (message.length < 10) {
                 document.getElementById('message').classList.add('error');
-                document.getElementById('messageError').textContent = 'Message must be at least 10 characters long';
+                document.getElementById('messageError').textContent = 'El mensaje debe tener al menos 10 caracteres';
                 isValid = false;
             }
 
@@ -88,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const originalText = submitBtn.textContent;
             submitBtn.setAttribute('aria-busy', 'true');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
+            submitBtn.textContent = 'Enviando...';
 
             // Prepare form data
             const formData = new FormData(this);
@@ -97,9 +110,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.append(key, value);
             }
 
-            // Submit form (use current origin for static deploy)
-            const thankYouUrl = new URL('/thank-you/', window.location.origin).pathname;
-            fetch('/__forms/contact', {
+            // Submit form using the template base path for static deploys.
+            const thankYouUrl = withBasePath('/thank-you/');
+            fetch(contactForm.getAttribute('action') || withBasePath('/__forms/contact'), {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -116,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.setAttribute('aria-busy', 'false');
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
-                document.getElementById('responseMessage').innerHTML = '<p style="color: #e74c3c;">Sorry, there was an error sending your message. Please try again.</p>';
+                document.getElementById('responseMessage').innerHTML = '<p style="color: #b4234f;">Hubo un error al enviar tu mensaje. Inténtalo de nuevo.</p>';
             });
         });
     }
@@ -131,14 +144,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = emailInput.value.trim();
 
             if (!email || !isValidEmail(email)) {
-                alert('Please enter a valid email address');
+                alert('Escribe un correo válido');
                 return;
             }
 
             // Show success message
             const button = this.querySelector('button');
             const originalText = button.textContent;
-            button.textContent = 'Subscribed!';
+            button.textContent = 'Suscripción lista';
             button.disabled = true;
 
             // Reset after 2 seconds
