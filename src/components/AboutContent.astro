@@ -1,0 +1,83 @@
+---
+import { aboutContent } from '../data/about';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+---
+
+<main>
+  <section class="about-hero" role="region" aria-labelledby="aboutHeroHeading">
+    <div class="about-hero__inner">
+      <div class="about-hero__copy">
+        <p class="eyebrow">Sobre mí</p>
+        <h1 id="aboutHeroHeading">{aboutContent.name}</h1>
+        <p class="hero-subtitle">{aboutContent.intro}</p>
+        <div class="hero-buttons">
+          <a href="#sobre-mi" class="btn btn-primary btn-large">Leer más</a>
+          <a href="#contacto" class="btn btn-secondary btn-large">Contacto</a>
+        </div>
+      </div>
+      <figure class="profile-frame">
+        <img src={aboutContent.profileImage.src} alt={aboutContent.profileImage.alt} loading="eager" />
+      </figure>
+    </div>
+  </section>
+
+  <section id="sobre-mi" class="about-section" role="region" aria-labelledby="bioHeading">
+    <div class="section-shell">
+      <article class="content-card intro-card">
+        <p class="eyebrow">Historia breve</p>
+        <h2 id="bioHeading">Un poquito sobre mí</h2>
+        <p>{aboutContent.bio}</p>
+      </article>
+
+      <article class="content-card">
+        <p class="eyebrow">Intereses</p>
+        <h2>Me gusta</h2>
+        <ul class="interest-list">
+          {aboutContent.interests.map((interest) => <li>{interest}</li>)}
+        </ul>
+      </article>
+
+      <article class="content-card">
+        <p class="eyebrow">Momentos</p>
+        <h2>Momentos destacados</h2>
+        <ol class="timeline-list">
+          {aboutContent.highlights.map((item) => (
+            <li>
+              <span class="timeline-year">{item.year}</span>
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </article>
+    </div>
+  </section>
+
+  <section id="contacto" class="contact" role="region" aria-labelledby="contactHeading">
+    <h2 id="contactHeading">Contacto</h2>
+    <p class="contact-description">{aboutContent.contactIntro}</p>
+    <form id="contactForm" method="post" action={`${base}/__forms/contact`} novalidate>
+      <div class="form-group">
+        <label for="name">Nombre <span aria-label="required">*</span></label>
+        <input type="text" id="name" name="name" required aria-required="true" aria-describedby="nameError" autocomplete="name" />
+        <span id="nameError" class="error-message"></span>
+      </div>
+      <div class="form-group">
+        <label for="email">Correo <span aria-label="required">*</span></label>
+        <input type="email" id="email" name="email" required aria-required="true" aria-describedby="emailError" autocomplete="email" />
+        <span id="emailError" class="error-message"></span>
+      </div>
+      <div class="form-group">
+        <label for="message">Mensaje <span aria-label="required">*</span></label>
+        <textarea id="message" name="message" rows="5" required aria-required="true" aria-describedby="messageError"></textarea>
+        <span id="messageError" class="error-message"></span>
+      </div>
+      <input type="text" name="_hp" style="display:none" autocomplete="off" tabindex="-1" />
+      <button type="submit" id="submitBtn" class="btn btn-primary" aria-busy="false">Enviar mensaje</button>
+    </form>
+    <div id="responseMessage" role="alert" aria-live="polite"></div>
+  </section>
+</main>
